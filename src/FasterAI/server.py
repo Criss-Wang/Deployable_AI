@@ -1,22 +1,33 @@
 from flask import Flask, request
 
-# Function to calculate the factorial of a number
-def calculate_factorial(n):
-    result = 1
-    if n > 1:
-        for i in range(1, n+1):
-            result = result * i
-    return result
+from helper import create_request, get_request, update_request
 
 # create the Flask app
 app = Flask(__name__) 
 
-# route to calculate the factorial of a number
+# route to queue the request
 @app.route('/factorial', methods=['GET'])
 def factorial_handler():
     no = int(request.args.get('no'))
-    result = calculate_factorial(no)
-    return str(result)
+    id = create_request(no)
+    return id
+
+# route to get the result
+@app.route('/factorial/result', methods=['GET'])
+def factorial_result_handler():
+    id = request.args.get('id')
+    result = get_request(id)
+    return result
+
+# route to update the result
+@app.route('/factorial/update', methods=['POST'])
+def factorial_update_handler():
+    body = request.get_json()
+    id = body['id']
+    status = body['status']
+    output = body['output']
+    update_request(id, status, output)
+    return 'OK'
 
 if __name__ == '__main__':
     app.run(debug=False)

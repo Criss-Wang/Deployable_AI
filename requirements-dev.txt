@@ -10,3 +10,6 @@ coverage
 
 # API
 flask
+pika
+redis
+requests
