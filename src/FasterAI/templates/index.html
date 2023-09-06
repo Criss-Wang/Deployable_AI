@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask-SocketIO Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e5e5e5;
+        }
+
+        #chat {
+            width: 50%;
+        }
+
+        #chat input {
+            width: 99%;
+        }
+
+        ul {
+            height: 500px;
+            background-color: white;
+            overflow-y: scroll;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        #landing {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="landing">
+        <input type="text" id="number" placeholder="number">
+        <button id="get-btn">JOIN</button>
+        <div id="result"></div>
+    </div>
+    
+    <script>
+        const socket = io('/factorial', {autoConnect: false, transports: [ 'websocket' ]});
+
+        document.getElementById("get-btn").addEventListener("click", function() {
+            let number = document.getElementById("number").value;
+
+            socket.connect();
+
+            socket.on("connect", function() {
+                socket.emit("calculate_factorial", number);
+            })
+        })
+
+        socket.on('factorial_id', (id) => {
+            // wait for 1 minute
+            setTimeout(() => {
+                console.log(id);
+                socket.emit("get_factorial_result", id);
+            }, 20000)
+        });
+        
+        socket.on('factorial_result', (data) => {
+            data = JSON.parse(data);
+            let resultDiv = document.getElementById('result');
+            console.log(data);
+            resultDiv.innerHTML += `Request ID: ${data.id}, Output: ${data.result}<br>`;
+        });
+    </script>
+</body>
+</html>

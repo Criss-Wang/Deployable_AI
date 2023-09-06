@@ -1,6 +1,9 @@
 import pika
 import json
-import requests
+import socketio
+import sys
+
+sys.set_int_max_str_digits(0)
 
 # Function to calculate the factorial of a number
 def calculate_factorial(n):
@@ -11,16 +14,20 @@ def calculate_factorial(n):
     return result
 
 # Create a callback function
-def callback(ch, method, properties, body):
+def callback(ch, method, properties, body, sio):
     body = json.loads(body)
     request_id = body['request_id']
     print('Received request with ID: ', request_id)
-    input = body['input']
-    output = calculate_factorial(input)
+    data = body['data']
+    result = calculate_factorial(int(data))
+    result = str(result)
     # Update the status to done
-    requests.post('http://localhost:5000/factorial/update', json={'id': request_id, 'status': 'done', 'output': output})
+    sio.emit('update_factorial_result', {
+        'id': request_id,
+        'result': result
+    })
 
-def start_consumer():
+def start_consumer(sio):
     # Create connection
     connection = pika.BlockingConnection(pika.URLParameters('amqp://guest:guest@localhost:5672/'))
     channel = connection.channel()
@@ -28,9 +35,28 @@ def start_consumer():
     channel.queue_declare(queue='factorial_process', durable=True)
     # Listen to the queue and 
     # call the callback function on receiving a message
-    channel.basic_consume(queue='factorial_process', on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(
+        queue='factorial_process', 
+        on_message_callback=lambda ch, method, properties, body: callback(ch, method, properties, body, sio),
+        auto_ack=True
+    )
     # Start consuming
     channel.start_consuming()
 
 if __name__ == '__main__':
-    start_consumer()
+    # Initialize the Socket.IO client
+    sio = socketio.Client()
+
+    @sio.on('connect')
+    def on_connect():
+        print('Connected to WebSocket server')
+
+    @sio.on('disconnect')
+    def on_disconnect():
+        print('Disconnected from WebSocket server')
+
+    # Connect to the Flask-SocketIO server
+    sio.connect('http://localhost:5000')
+
+    # Start the RabbitMQ consumer with the Socket.IO client as an argument
+    start_consumer(sio)

@@ -13,3 +13,5 @@ flask
 pika
 redis
 requests
+simple-websocket
+websocket-client
