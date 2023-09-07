@@ -11,3 +11,5 @@ COPY . /app/server
 EXPOSE 5000
 
 CMD ["python", "main.py"]
+
+HEALTHCHECK CMD curl --fail http://localhost:5000 || exit 1 

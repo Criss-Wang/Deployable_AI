@@ -39,9 +39,8 @@ services:
     volumes:
       - ./src/FasterAI/worker:/app/worker
     depends_on:
-      - rabbitmq
-      - redis
-      - server
+      server:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -51,9 +50,8 @@ services:
     volumes:
       - ./src/FasterAI/worker:/app/worker
     depends_on:
-      - rabbitmq
-      - redis
-      - server
+      server:
+        condition: service_healthy
     networks:
       - app-network
 
