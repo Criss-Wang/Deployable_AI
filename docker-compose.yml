@@ -19,6 +19,42 @@ services:
     networks:
       - rabbitnet
 
+  server:
+    build: ./src/FasterAI/server
+    container_name: server
+    volumes:
+      - ./src/FasterAI/server:/app/server
+    ports:
+      - "5000:5000"
+    depends_on:
+      - rabbitmq
+      - redis
+    networks:
+      - rabbitnet
+
+  worker1:
+    build: ./src/FasterAI/worker
+    container_name: consumer1
+    volumes:
+      - ./src/FasterAI/worker:/app/worker
+    depends_on:
+      - rabbitmq
+      - redis
+      - server
+    networks:
+      - rabbitnet
+
+  worker2:
+    build: ./src/FasterAI/worker
+    container_name: consumer2
+    volumes:
+      - ./src/FasterAI/worker:/app/worker
+    depends_on:
+      - rabbitmq
+      - redis
+      - server
+    networks:
+      - rabbitnet
 
 networks:
   rabbitnet:

@@ -63,7 +63,6 @@
         })
 
         socket.on('factorial_id', (id) => {
-            // wait for 1 minute
             setTimeout(() => {
                 console.log(id);
                 socket.emit("get_factorial_result", id);
@@ -71,6 +70,7 @@
         });
         
         socket.on('factorial_result', (data) => {
+            // wait for 5 seconds and check the status: if done then publish
             data = JSON.parse(data);
             let resultDiv = document.getElementById('result');
             console.log(data);

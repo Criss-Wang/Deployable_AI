@@ -1,15 +1,6 @@
-# Build Packages
-setuptools
-wheel
-twine
-
-# Lint & Coverage
-flake8
-mypy
-coverage
-
 # API
 flask
+flask-socketio
 pika
 redis
 requests

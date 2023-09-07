@@ -3,7 +3,6 @@ from server import FactorialNamespace
 
 import eventlet
 
-
 if __name__ == "__main__":
     app = create_app()
     eventlet.monkey_patch()

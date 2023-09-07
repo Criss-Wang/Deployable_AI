@@ -56,7 +56,7 @@ if __name__ == '__main__':
         print('Disconnected from WebSocket server')
 
     # Connect to the Flask-SocketIO server
-    sio.connect('http://localhost:5000')
+    sio.connect('http://server:5000')
 
     # Start the RabbitMQ consumer with the Socket.IO client as an argument
     start_consumer(sio)
