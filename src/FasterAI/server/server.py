@@ -9,7 +9,7 @@ import json
 - Redis to store the data of requests
 - Deleting the processed request records from the database as they have no use
 - Make the consumer/worker dockerize so it can be easy to run multiple consumers using Amazon EKS, ECS, or other services
-TODO:
+
 Things we have done:
 - TTL
 - persistence with RDB

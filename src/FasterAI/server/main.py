@@ -7,4 +7,4 @@ if __name__ == "__main__":
     app = create_app()
     eventlet.monkey_patch()
     socketio.on_namespace(FactorialNamespace('/factorial'))
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0')

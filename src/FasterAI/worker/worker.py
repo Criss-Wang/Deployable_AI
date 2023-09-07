@@ -29,7 +29,7 @@ def callback(ch, method, properties, body, sio):
 
 def start_consumer(sio):
     # Create connection
-    connection = pika.BlockingConnection(pika.URLParameters('amqp://guest:guest@localhost:5672/'))
+    connection = pika.BlockingConnection(pika.URLParameters('amqp://guest:guest@rabbitmq:5672/'))
     channel = connection.channel()
     # Create queue . For now queue name is factorial_process
     channel.queue_declare(queue='factorial_process', durable=True)

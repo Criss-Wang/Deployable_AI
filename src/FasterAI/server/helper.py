@@ -3,12 +3,12 @@ import pika
 import uuid
 import redis
 
-redis_data_instance = redis.Redis(host='localhost', port=6379, db=0)
-redis_request_instance = redis.Redis(host='localhost', port=6379, db=1)
+redis_data_instance = redis.Redis(host='redis', port=6379, db=0)
+redis_request_instance = redis.Redis(host='redis', port=6379, db=1)
 
 def publish_to_rabbitMQ(data):
     # Create connection
-    connection = pika.BlockingConnection(pika.URLParameters('amqp://guest:guest@localhost:5672/'))
+    connection = pika.BlockingConnection(pika.URLParameters('amqp://guest:guest@rabbitmq:5672/'))
     channel = connection.channel()
     # Create queue . For now queue name is factorial_process
     channel.queue_declare(queue='factorial_process', durable=True)

@@ -8,4 +8,6 @@ RUN pip install --no-cache-dir -r /app/server/requirements.txt
 
 COPY . /app/server
 
+EXPOSE 5000
+
 CMD ["python", "main.py"]
