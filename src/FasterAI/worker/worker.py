@@ -3,7 +3,10 @@ import json
 import socketio
 import sys
 
+from functools import partial
+
 sys.set_int_max_str_digits(0)
+
 
 # Function to calculate the factorial of a number
 def calculate_factorial(n):
@@ -12,6 +15,7 @@ def calculate_factorial(n):
         for i in range(1, n+1):
             result = result * i
     return result
+
 
 # Create a callback function
 def callback(ch, method, properties, body, sio):
@@ -27,21 +31,30 @@ def callback(ch, method, properties, body, sio):
         'result': result
     })
 
+
 def start_consumer(sio):
+    url_params = pika.URLParameters('amqp://guest:guest@rabbitmq:5672/')
     # Create connection
-    connection = pika.BlockingConnection(pika.URLParameters('amqp://guest:guest@rabbitmq:5672/'))
+    connection = pika.BlockingConnection(url_params)
     channel = connection.channel()
+    channel.exchange_declare(exchange="deployable_ai", exchange_type='direct')
+
     # Create queue . For now queue name is factorial_process
-    channel.queue_declare(queue='factorial_process', durable=True)
-    # Listen to the queue and 
+    channel.queue_declare(queue='deployable_ai', durable=True)
+
+    channel.queue_bind(exchange='deployable_ai',
+                       queue='deployable_ai',
+                       routing_key='deployable_ai')
+    # Listen to the queue and
     # call the callback function on receiving a message
     channel.basic_consume(
-        queue='factorial_process', 
-        on_message_callback=lambda ch, method, properties, body: callback(ch, method, properties, body, sio),
+        queue='deployable_ai',
+        on_message_callback=partial(callback, sio=sio),
         auto_ack=True
     )
     # Start consuming
     channel.start_consuming()
+
 
 if __name__ == '__main__':
     # Initialize the Socket.IO client

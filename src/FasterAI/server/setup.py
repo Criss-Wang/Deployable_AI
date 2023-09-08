@@ -5,6 +5,7 @@ from client import client
 
 socketio = SocketIO()
 
+
 def create_app():
     app = Flask(__name__)
     app.config["DEBUG"] = True
